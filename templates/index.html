@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Computer Vision Lab</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- NAVIGATION BAR -->
+
+<nav>
+
+    <div class="nav-title">
+        COMPUTER VISION
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('module2') }}">
+            Module 2
+        </a>
+
+        <a href="{{ url_for('module3') }}">
+            Module 3
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+
+    <!-- MAIN HEADER -->
+
+    <header>
+
+        <p class="eyebrow">
+            COMPUTER VISION COURSEWORK
+        </p>
+
+        <h1>
+            Computer Vision Lab
+        </h1>
+
+        <p>
+            Interactive implementations and experimental
+            results from my Computer Vision coursework.
+        </p>
+
+    </header>
+
+
+
+    <!-- MODULES -->
+
+    <section>
+
+        <h2>Assignment Modules</h2>
+
+        <p class="secondary-text">
+
+            Select a module to view its implementation,
+            calculations and experimental results.
+
+        </p>
+
+
+        <div class="module-grid">
+
+
+            <!-- MODULE 2 -->
+
+            <a class="module-card"
+               href="{{ url_for('module2') }}">
+
+                <span class="module-number">
+                    MODULE 02
+                </span>
+
+                <h3>
+                    Camera Measurement System
+                </h3>
+
+                <p>
+
+                    Camera calibration, perspective projection,
+                    real-world object measurement and error
+                    analysis.
+
+                </p>
+
+                <span class="open-module">
+                    Open Module →
+                </span>
+
+            </a>
+
+
+
+            <!-- MODULE 3 -->
+
+            <a class="module-card"
+               href="{{ url_for('module3') }}">
+
+                <span class="module-number">
+                    MODULE 03
+                </span>
+
+                <h3>
+                    Module 3
+                </h3>
+
+                <p>
+
+                    The Module 3 Computer Vision implementation
+                    will be available here.
+
+                </p>
+
+                <span class="open-module">
+                    Open Module →
+                </span>
+
+            </a>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Vision Coursework
+
+</footer>
+
+
+</body>
+
+</html>
