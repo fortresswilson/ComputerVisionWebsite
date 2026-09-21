@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Module 2 | Camera Measurement</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- NAVIGATION -->
+
+<nav>
+
+    <div class="nav-title">
+        COMPUTER VISION
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('module2') }}">
+            Module 2
+        </a>
+
+        <a href="{{ url_for('module3') }}">
+            Module 3
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- HEADER -->
+
+<header>
+
+    <p class="eyebrow">
+        MODULE 02
+    </p>
+
+    <h1>
+        Camera Measurement System
+    </h1>
+
+    <p>
+        Camera calibration, perspective projection,
+        object dimension estimation and error analysis.
+    </p>
+
+</header>
+
+
+
+<!-- ======================================
+     CAMERA CALIBRATION
+======================================= -->
+
+<section>
+
+    <span class="section-number">
+        01
+    </span>
+
+    <h2>
+        Camera Calibration
+    </h2>
+
+    <p class="secondary-text">
+
+        Camera intrinsic parameters used by the
+        perspective projection system.
+
+    </p>
+
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h3>fx</h3>
+
+            <p>
+                {{ fx }} px
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>fy</h3>
+
+            <p>
+                {{ fy }} px
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>cx</h3>
+
+            <p>
+                {{ cx }} px
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>cy</h3>
+
+            <p>
+                {{ cy }} px
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <h3>
+        Camera Matrix
+    </h3>
+
+
+    <div class="matrix">
+
+        {% for row in camera_matrix %}
+
+            <div>
+
+                [
+
+                {% for value in row %}
+
+                    {{ "%.2f"|format(value) }}
+
+                {% endfor %}
+
+                ]
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+
+    <h3>
+        Distortion Coefficients
+    </h3>
+
+
+    <div class="matrix">
+
+        [
+
+        {% for value in distortion_coefficients %}
+
+            {{ value }}
+
+        {% endfor %}
+
+        ]
+
+    </div>
+
+
+
+    <p>
+
+        <strong>
+            Mean Reprojection Error:
+        </strong>
+
+        {{ reprojection_error }} pixels
+
+    </p>
+
+
+    <div class="note">
+
+        Preliminary calibration values are used
+        for implementation testing.
+
+    </div>
+
+</section>
+
+
+
+<!-- ======================================
+     PERSPECTIVE PROJECTION
+======================================= -->
+
+<section>
+
+    <span class="section-number">
+        02
+    </span>
+
+    <h2>
+        Perspective Projection
+    </h2>
+
+
+    <p class="secondary-text">
+
+        Enter the distance between the camera and object,
+        along with the object's measured dimensions in
+        pixels.
+
+    </p>
+
+
+    <div class="equation">
+
+        Real Width = (Pixel Width × Distance) / fx
+
+        <br><br>
+
+        Real Height = (Pixel Height × Distance) / fy
+
+    </div>
+
+
+
+    <form method="POST">
+
+
+        <label>
+            Camera-to-Object Distance (meters)
+        </label>
+
+        <input
+            type="number"
+            name="distance"
+            step="0.01"
+            value="2.50"
+            required
+        >
+
+
+        <label>
+            Object Width (pixels)
+        </label>
+
+        <input
+            type="number"
+            name="pixel_width"
+            step="1"
+            value="480"
+            required
+        >
+
+
+        <label>
+            Object Height (pixels)
+        </label>
+
+        <input
+            type="number"
+            name="pixel_height"
+            step="1"
+            value="368"
+            required
+        >
+
+
+        <button type="submit">
+
+            Calculate Dimensions
+
+        </button>
+
+
+    </form>
+
+
+
+    {% if error_message %}
+
+        <div class="error">
+
+            {{ error_message }}
+
+        </div>
+
+    {% endif %}
+
+
+
+    {% if measurement_result %}
+
+
+        <div class="result">
+
+
+            <p class="result-label">
+                ESTIMATED DIMENSIONS
+            </p>
+
+
+            <div class="result-grid">
+
+
+                <div>
+
+                    <span>
+                        Width
+                    </span>
+
+                    <strong>
+
+                        {{ measurement_result.width }}
+                        cm
+
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Height
+                    </span>
+
+                    <strong>
+
+                        {{ measurement_result.height }}
+                        cm
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <p class="secondary-text">
+
+                Distance:
+                {{ measurement_result.distance }} m
+
+                &nbsp; · &nbsp;
+
+                Image dimensions:
+                {{ measurement_result.pixel_width }}
+                ×
+                {{ measurement_result.pixel_height }}
+                pixels
+
+            </p>
+
+
+        </div>
+
+
+    {% endif %}
+
+
+</section>
+
+
+
+<!-- ======================================
+     VALIDATION
+======================================= -->
+
+<section>
+
+    <span class="section-number">
+        03
+    </span>
+
+    <h2>
+        Validation Experiment
+    </h2>
+
+
+    <p>
+
+        Reference object dimensions:
+
+        <strong>
+            40.00 cm × 30.00 cm
+        </strong>
+
+    </p>
+
+
+    <p>
+
+        Camera-to-object distance:
+
+        <strong>
+            2.50 meters
+        </strong>
+
+    </p>
+
+
+    <div class="note">
+
+        These preliminary simulated measurements are used
+        to verify the implementation and statistical
+        calculations prior to physical data collection.
+
+    </div>
+
+
+
+    <div class="table-container">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>Test</th>
+
+                    <th>
+                        Actual W
+                    </th>
+
+                    <th>
+                        Estimated W
+                    </th>
+
+                    <th>
+                        W Error
+                    </th>
+
+                    <th>
+                        Actual H
+                    </th>
+
+                    <th>
+                        Estimated H
+                    </th>
+
+                    <th>
+                        H Error
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            {% for result in validation_results %}
+
+
+                <tr>
+
+                    <td>
+                        {{ result.number }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(result.actual_width) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(result.estimated_width) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(result.width_error) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(result.actual_height) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(result.estimated_height) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(result.height_error) }}
+                    </td>
+
+                </tr>
+
+
+            {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ======================================
+     ERROR STATISTICS
+======================================= -->
+
+<section>
+
+    <span class="section-number">
+        04
+    </span>
+
+    <h2>
+        Error Statistics
+    </h2>
+
+
+    <div class="stats-grid">
+
+
+        <div class="stat">
+
+            <h3>
+                Width MAE
+            </h3>
+
+            <p>
+                {{ statistics.width_mae }} cm
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Height MAE
+            </h3>
+
+            <p>
+                {{ statistics.height_mae }} cm
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Width RMSE
+            </h3>
+
+            <p>
+                {{ statistics.width_rmse }} cm
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Height RMSE
+            </h3>
+
+            <p>
+                {{ statistics.height_rmse }} cm
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Width Mean Error
+            </h3>
+
+            <p>
+                {{ statistics.width_percentage }}%
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Height Mean Error
+            </h3>
+
+            <p>
+                {{ statistics.height_percentage }}%
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Width Std. Dev.
+            </h3>
+
+            <p>
+                {{ statistics.width_std }} cm
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Height Std. Dev.
+            </h3>
+
+            <p>
+                {{ statistics.height_std }} cm
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ======================================
+     THEORY
+======================================= -->
+
+<section>
+
+    <span class="section-number">
+        05
+    </span>
+
+    <h2>
+        Perspective Projection Theory
+    </h2>
+
+
+    <p>
+
+        Under the pinhole camera model, the image
+        coordinates of a 3D point depend on its
+        position relative to the camera and the
+        intrinsic camera parameters.
+
+    </p>
+
+
+    <div class="equation">
+
+        u = fx(X / Z) + cx
+
+        <br><br>
+
+        v = fy(Y / Z) + cy
+
+    </div>
+
+
+    <p>
+
+        Rearranging these equations allows the
+        real-world coordinates to be estimated
+        when depth Z is known.
+
+    </p>
+
+
+    <div class="equation">
+
+        X = (u - cx)Z / fx
+
+        <br><br>
+
+        Y = (v - cy)Z / fy
+
+    </div>
+
+
+
+    <h3>
+        Two-Camera Relationship
+    </h3>
+
+
+    <p>
+
+        If Camera 2 is rotated and translated
+        relative to Camera 1, the coordinates
+        of a 3D point are transformed using:
+
+    </p>
+
+
+    <div class="equation">
+
+        P₂ = RP₁ + t
+
+    </div>
+
+
+    <p>
+
+        R represents the rotation matrix and
+        t represents the translation vector.
+
+    </p>
+
+
+    <div class="equation">
+
+        s₁x₁ = K₁[I | 0]P
+
+        <br><br>
+
+        s₂x₂ = K₂[R | t]P
+
+    </div>
+
+
+    <p>
+
+        Corresponding image points also satisfy
+        the epipolar constraint:
+
+    </p>
+
+
+    <div class="equation">
+
+        x₂ᵀ F x₁ = 0
+
+    </div>
+
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Vision · Module 02
+
+</footer>
+
+
+</body>
+
+</html>
