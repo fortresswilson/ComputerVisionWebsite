@@ -1,8 +1,17 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 import numpy as np
+import cv2
+import os
+import uuid
 
 app = Flask(__name__)
+# Folder used to store Module 3 images
+RESULT_FOLDER = os.path.join("static", "results")
 
+# Create the folder automatically if it does not exist
+os.makedirs(RESULT_FOLDER, exist_ok=True)
+
+app.config["RESULT_FOLDER"] = RESULT_FOLDER
 
 
 # HOME PAGE
@@ -195,10 +204,257 @@ def module2():
 # MODULE 3 PAGE
 
 
-@app.route("/module3")
-def module3():
-    return render_template("module3.html")
+# MODULE 3 - IMAGE BLURRING
 
+
+@app.route("/module3", methods=["GET", "POST"])
+def module3():
+
+    results = None
+    error_message = None
+
+    if request.method == "POST":
+
+        try:
+
+            
+            # GET UPLOADED IMAGE
+            
+
+            uploaded_file = request.files.get("image")
+
+            if uploaded_file is None or uploaded_file.filename == "":
+                raise ValueError("Please select an image.")
+
+            # Get selected filter size
+            kernel_size = int(request.form.get("kernel_size", 5))
+
+            # Kernel size must be odd
+           
+            if kernel_size not in [5, 11, 21, 31]:
+                raise ValueError("Please select a valid filter size.")
+
+
+           
+            # READ IMAGE
+          
+
+            file_bytes = np.frombuffer(
+                uploaded_file.read(),
+                np.uint8
+            )
+
+            image = cv2.imdecode(
+                file_bytes,
+                cv2.IMREAD_COLOR
+            )
+
+            if image is None:
+                raise ValueError("The uploaded file is not a valid image.")
+
+
+         
+            # CREATE BLUR KERNEL
+           
+
+            kernel = np.ones(
+                (kernel_size, kernel_size),
+                dtype=np.float32
+            )
+
+            kernel = kernel / (kernel_size * kernel_size)
+
+
+           
+            # SPATIAL DOMAIN FILTERING
+           
+
+            spatial_result = cv2.filter2D(
+                image,
+                -1,
+                kernel,
+                borderType=cv2.BORDER_CONSTANT
+            )
+
+
+            # FOURIER DOMAIN FILTERING
+           
+
+            image_float = image.astype(np.float32)
+
+            height, width, channels = image_float.shape
+
+            # Full convolution size
+            full_height = height + kernel_size - 1
+            full_width = width + kernel_size - 1
+
+            frequency_channels = []
+
+            for channel_number in range(channels):
+
+                channel = image_float[:, :, channel_number]
+
+                # Fourier transform of image
+                image_fft = np.fft.fft2(
+                    channel,
+                    s=(full_height, full_width)
+                )
+
+                # Fourier transform of kernel
+                kernel_fft = np.fft.fft2(
+                    kernel,
+                    s=(full_height, full_width)
+                )
+
+                # Multiplication in frequency domain
+                multiplied = image_fft * kernel_fft
+
+                # Convert back to spatial domain
+                full_result = np.fft.ifft2(
+                    multiplied
+                ).real
+
+                # Crop result so it matches filter2D output
+                offset = kernel_size // 2
+
+                cropped = full_result[
+                    offset:offset + height,
+                    offset:offset + width
+                ]
+
+                frequency_channels.append(cropped)
+
+
+            frequency_result_float = np.stack(
+                frequency_channels,
+                axis=2
+            )
+
+            frequency_result = np.clip(
+                frequency_result_float,
+                0,
+                255
+            ).astype(np.uint8)
+
+
+           
+            # COMPARE BOTH METHODS
+           
+
+            difference = cv2.absdiff(
+                spatial_result,
+                frequency_result
+            )
+
+            mean_difference = float(
+                np.mean(difference)
+            )
+
+            max_difference = int(
+                np.max(difference)
+            )
+
+
+          
+            # SAVE IMAGES
+            
+
+            unique_id = uuid.uuid4().hex
+
+            original_name = f"{unique_id}_original.jpg"
+            spatial_name = f"{unique_id}_spatial.jpg"
+            frequency_name = f"{unique_id}_frequency.jpg"
+            difference_name = f"{unique_id}_difference.jpg"
+
+
+            cv2.imwrite(
+                os.path.join(
+                    app.config["RESULT_FOLDER"],
+                    original_name
+                ),
+                image
+            )
+
+            cv2.imwrite(
+                os.path.join(
+                    app.config["RESULT_FOLDER"],
+                    spatial_name
+                ),
+                spatial_result
+            )
+
+            cv2.imwrite(
+                os.path.join(
+                    app.config["RESULT_FOLDER"],
+                    frequency_name
+                ),
+                frequency_result
+            )
+
+
+            # Amplify the difference only for visualization.
+            # This does NOT affect the numerical comparison.
+            visible_difference = cv2.convertScaleAbs(
+                difference,
+                alpha=10
+            )
+
+            cv2.imwrite(
+                os.path.join(
+                    app.config["RESULT_FOLDER"],
+                    difference_name
+                ),
+                visible_difference
+            )
+
+
+         
+            # SEND RESULTS TO WEBPAGE
+            
+
+            results = {
+
+                "original":
+                    f"results/{original_name}",
+
+                "spatial":
+                    f"results/{spatial_name}",
+
+                "frequency":
+                    f"results/{frequency_name}",
+
+                "difference":
+                    f"results/{difference_name}",
+
+                "kernel_size":
+                    kernel_size,
+
+                "mean_difference":
+                    round(mean_difference, 4),
+
+                "max_difference":
+                    max_difference
+            }
+
+
+        except ValueError as error:
+
+            error_message = str(error)
+
+
+        except Exception as error:
+
+            error_message = (
+                "An error occurred while processing the image: "
+                + str(error)
+            )
+
+
+    return render_template(
+        "module3.html",
+        results=results,
+        error_message=error_message
+    )
 
 
 # RUN APPLICATION

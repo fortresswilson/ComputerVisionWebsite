@@ -9,7 +9,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Module 3 | Computer Vision</title>
+    <title>Module 3 | Image Filtering</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
@@ -19,6 +19,8 @@
 
 <body>
 
+
+<!-- NAVIGATION -->
 
 <nav>
 
@@ -45,44 +47,427 @@
 </nav>
 
 
+
 <div class="container">
 
 
-    <header>
+<!-- HEADER -->
 
-        <p class="eyebrow">
-            MODULE 03
-        </p>
+<header>
 
-        <h1>
-            Module 3
-        </h1>
+    <p class="eyebrow">
+        MODULE 03
+    </p>
 
-        <p>
-            Computer Vision Assignment
-        </p>
+    <h1>
+        Image Blurring & Filtering
+    </h1>
 
-    </header>
+    <p>
+        Comparing image filtering in the spatial
+        domain and Fourier frequency domain.
+    </p>
+
+</header>
 
 
-    <section class="coming-soon">
 
-        <span class="section-number">
-            03
-        </span>
+<!--  IMAGE UPLOAD -->
 
-        <h2>
-            Module 3
-        </h2>
+<section>
 
-        <p class="secondary-text">
+    <span class="section-number">
+        01
+    </span>
 
-            The Module 3 web implementation
-            will be added here.
+    <h2>
+        Image Blurring
+    </h2>
 
-        </p>
 
-    </section>
+    <p class="secondary-text">
+
+        Upload an image and select an averaging
+        filter size. The image will be blurred
+        using both spatial-domain convolution and
+        Fourier-domain multiplication.
+
+    </p>
+
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+
+        <label>
+            Select Image
+        </label>
+
+        <input
+            type="file"
+            name="image"
+            accept="image/*"
+            required
+        >
+
+
+        <label>
+            Filter Size
+        </label>
+
+
+        
+
+            <select name="kernel_size">
+
+    <option value="5">
+        5 × 5 - Light Blur
+    </option>
+
+    <option value="11">
+        11 × 11 - Medium Blur
+    </option>
+
+    <option value="21" selected>
+        21 × 21 - Strong Blur
+    </option>
+
+    <option value="31">
+        31 × 31 - Very Strong Blur
+    </option>
+
+</select>
+
+       
+
+
+        <button type="submit">
+
+            Apply Blur & Compare
+
+        </button>
+
+
+    </form>
+
+
+    {% if error_message %}
+
+        <div class="error">
+
+            {{ error_message }}
+
+        </div>
+
+    {% endif %}
+
+
+</section>
+
+
+
+{% if results %}
+
+
+<!--  RESULTS -->
+
+<section>
+
+    <span class="section-number">
+        02
+    </span>
+
+    <h2>
+        Filtering Results
+    </h2>
+
+
+    <p class="secondary-text">
+
+        Filter used:
+
+        {{ results.kernel_size }}
+        ×
+        {{ results.kernel_size }}
+
+        averaging kernel.
+
+    </p>
+
+
+
+    <div class="image-grid">
+
+
+        <div class="image-card">
+
+            <h3>
+                Original Image
+            </h3>
+
+            <img
+                src="{{ url_for('static',
+                filename=results.original) }}"
+                alt="Original image"
+            >
+
+        </div>
+
+
+
+        <div class="image-card">
+
+            <h3>
+                Spatial Domain
+            </h3>
+
+            <img
+                src="{{ url_for('static',
+                filename=results.spatial) }}"
+                alt="Spatial filtering result"
+            >
+
+        </div>
+
+
+
+        <div class="image-card">
+
+            <h3>
+                Fourier Domain
+            </h3>
+
+            <img
+                src="{{ url_for('static',
+                filename=results.frequency) }}"
+                alt="Fourier filtering result"
+            >
+
+        </div>
+
+
+
+        <div class="image-card">
+
+            <h3>
+                Difference
+            </h3>
+
+            <img
+                src="{{ url_for('static',
+                filename=results.difference) }}"
+                alt="Difference between methods"
+            >
+
+            <p class="secondary-text">
+
+                Difference is amplified for
+                visibility.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!--VALIDATION-->
+
+<section>
+
+    <span class="section-number">
+        03
+    </span>
+
+    <h2>
+        Experimental Validation
+    </h2>
+
+
+    <p>
+
+        The numerical difference between the
+        spatial-domain result and Fourier-domain
+        result is calculated pixel by pixel.
+
+    </p>
+
+
+    <div class="stats-grid">
+
+
+        <div class="stat">
+
+            <h3>
+                Mean Pixel Difference
+            </h3>
+
+            <p>
+                {{ results.mean_difference }}
+            </p>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>
+                Maximum Pixel Difference
+            </h3>
+
+            <p>
+                {{ results.max_difference }}
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="note">
+
+        Small differences can occur because the
+        final image values must be rounded to
+        integer pixel intensities. The two methods
+        implement the same linear filtering
+        operation.
+
+    </div>
+
+</section>
+
+
+{% endif %}
+
+
+
+<!-- THEORY -->
+
+<section>
+
+    <span class="section-number">
+        04
+    </span>
+
+    <h2>
+        Convolution Theorem
+    </h2>
+
+
+    <p>
+
+        Let f(x,y) represent the original image
+        and h(x,y) represent the spatial filter.
+
+        Applying the filter directly in the
+        spatial domain gives:
+
+    </p>
+
+
+    <div class="equation">
+
+        g(x,y) = f(x,y) * h(x,y)
+
+    </div>
+
+
+    <p>
+
+        The symbol * represents two-dimensional
+        convolution.
+
+    </p>
+
+
+
+    <h3>
+        Fourier Domain
+    </h3>
+
+
+    <p>
+
+        Taking the Fourier transform of the
+        spatial convolution gives:
+
+    </p>
+
+
+    <div class="equation">
+
+        G(u,v) = F(u,v) H(u,v)
+
+    </div>
+
+
+    <p>
+
+        Therefore, convolution in the spatial
+        domain becomes multiplication in the
+        frequency domain.
+
+    </p>
+
+
+
+    <h3>
+        Returning to the Spatial Domain
+    </h3>
+
+
+    <p>
+
+        The inverse Fourier transform converts
+        the frequency-domain result back into an
+        image:
+
+    </p>
+
+
+    <div class="equation">
+
+        g(x,y) =
+        F⁻¹ { F(u,v) H(u,v) }
+
+    </div>
+
+
+    <p>
+
+        Therefore:
+
+    </p>
+
+
+    <div class="equation">
+
+        f(x,y) * h(x,y)
+
+        &nbsp; ↔ &nbsp;
+
+        F(u,v) H(u,v)
+
+    </div>
+
+
+    <p>
+
+        The experiment above validates this
+        relationship by applying the same averaging
+        filter using both approaches and comparing
+        the resulting pixel values.
+
+    </p>
+
+
+</section>
+
 
 
 </div>
