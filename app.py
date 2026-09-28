@@ -456,6 +456,11 @@ def module3():
         error_message=error_message
     )
 
+     # MODULE 4 PAGE
+
+@app.route("/module4")
+def module4():
+    return render_template("module4.html")
 
 # RUN APPLICATION
 

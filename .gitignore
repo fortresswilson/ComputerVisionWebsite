@@ -16,3 +16,4 @@ venv/
 .vscode/
 # Generated Module 3 images
 static/results/
+sam2.1_hiera_small.pt

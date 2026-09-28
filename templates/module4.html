@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4 - Human Boundary Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <h1>Module 4: Human Boundary Detection</h1>
+
+    <h2>Question 1: RGB Image</h2>
+
+    <p>
+        Human boundary detection was performed using classical computer
+        vision with OpenCV GrabCut and contour detection. The result was
+        then compared with SAM2 segmentation.
+    </p>
+
+    <h3>Original Image</h3>
+    <img src="{{ url_for('static', filename='images/person_rgb.jpeg') }}"
+         width="350">
+
+    <h3>OpenCV GrabCut Result</h3>
+    <img src="{{ url_for('static', filename='results/module4_rgb_boundary.jpg') }}"
+         width="350">
+
+    <h3>SAM2 Result</h3>
+    <img src="{{ url_for('static', filename='results/module4_rgb_sam2_boundary.jpg') }}"
+         width="350">
+
+    <h3>Comparison</h3>
+    <p>
+        Both methods successfully detected the human subject. The classical
+        OpenCV method used GrabCut and contour detection without machine
+        learning. SAM2 produced a more precise segmentation around complex
+        areas such as the hair and clothing because it uses a trained
+        segmentation model.
+    </p>
+
+    <hr>
+
+<h2>Question 2: Thermal Image</h2>
+
+<p>
+    Human boundary detection was also performed on a thermal image.
+    A classical computer vision method based on intensity thresholding,
+    morphological filtering, and contour detection was used and compared
+    with SAM2.
+</p>
+
+<h3>Original Thermal Image</h3>
+<img src="{{ url_for('static', filename='images/person_thermal.png') }}"
+     width="350">
+
+<h3>Classical Computer Vision Result</h3>
+<img src="{{ url_for('static', filename='results/module4_thermal_boundary.jpg') }}"
+     width="350">
+
+<h3>SAM2 Result</h3>
+<img src="{{ url_for('static', filename='results/module4_thermal_sam2_boundary.jpg') }}"
+     width="350">
+
+<h3>Comparison</h3>
+
+<p>
+    Both methods successfully detected the human boundary in the thermal
+    image. The classical method worked well because the warmer human body
+    had a strong intensity difference from the cooler background. SAM2
+    also produced a precise boundary around the subject.
+</p>
+</body>
+</html>
