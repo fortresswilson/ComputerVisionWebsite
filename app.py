@@ -462,6 +462,12 @@ def module3():
 def module4():
     return render_template("module4.html")
 
+# MODULE 6 PAGE
+
+@app.route("/module6")
+def module6():
+    return render_template("module6.html")
+
 # RUN APPLICATION
 
 

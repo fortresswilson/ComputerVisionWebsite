@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 6 - Motion and Structure from Motion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Module 6: Motion and Structure from Motion</h1>
+
+        <p>
+            This module explores optical flow, motion tracking, and
+            structure from motion using videos and images captured for
+            the experiment.
+        </p>
+
+        <!-- PART A -->
+        <section>
+            <h2>Part A: Optical Flow and Motion Tracking</h2>
+
+            <p>
+                Two videos containing object motion were analyzed.
+                Optical flow was used to estimate the direction and
+                magnitude of motion between consecutive video frames.
+            </p>
+
+            <h3>Optical Flow</h3>
+
+            <p>
+                The green motion vectors show how image points move
+                between consecutive frames. Their direction represents
+                the direction of motion, while their length indicates
+                the amount of movement.
+            </p>
+
+            <h3>Tracking Validation</h3>
+
+            <p>
+                A feature point was tracked between two consecutive
+                frames of each video using optical flow.
+            </p>
+
+            <h4>Video 1</h4>
+
+            <p>
+                Frame 1 point: (998.00, 491.00)<br>
+                Frame 2 point: (994.95, 498.14)<br>
+                Horizontal displacement: -3.05 pixels<br>
+                Vertical displacement: 7.14 pixels<br>
+                Total displacement: 7.76 pixels
+            </p>
+
+            <h4>Video 2</h4>
+
+            <p>
+                Frame 1 point: (1018.00, 1082.00)<br>
+                Frame 2 point: (1014.30, 1078.14)<br>
+                Horizontal displacement: -3.70 pixels<br>
+                Vertical displacement: -3.86 pixels<br>
+                Total displacement: 5.34 pixels
+            </p>
+        </section>
+
+
+        <!-- PART B -->
+        <section>
+            <h2>Part B: Structure from Motion</h2>
+
+            <p>
+                A composition book was selected as the planar object.
+                Four images were captured from different camera
+                viewpoints while the object remained stationary.
+            </p>
+
+            <h3>Original Camera Views</h3>
+
+            <div class="image-grid">
+
+                <div>
+                    <img src="{{ url_for('static',
+                    filename='images/module6/book_view1.jpg') }}"
+                      class="module6-image"
+                    alt="Book View 1">
+                    <p>View 1</p>
+                </div>
+
+                <div>
+                    <img src="{{ url_for('static',
+                    filename='images/module6/book_view2.jpg') }}"
+                      class="module6-image"
+                    alt="Book View 2">
+                    <p>View 2</p>
+                </div>
+
+                <div>
+                    <img src="{{ url_for('static',
+                    filename='images/module6/book_view3.jpg') }}"
+                      class="module6-image"
+                    alt="Book View 3">
+                    <p>View 3</p>
+                </div>
+
+                <div>
+                    <img src="{{ url_for('static',
+                    filename='images/module6/book_view4.jpg') }}"
+                      class="module6-image"
+                    alt="Book View 4">
+                    <p>View 4</p>
+                </div>
+
+            </div>
+
+            <h3>Boundary Reconstruction</h3>
+
+            <p>
+                The corners of the book in the reference image were
+                identified and transformed into the other viewpoints
+                using homography. The reconstructed boundary is shown
+                by the green outline.
+            </p>
+
+            <h3>Camera Information</h3>
+
+            <p>
+                Camera: Apple iPhone 17 Pro Max<br>
+                Image resolution: 4284 × 5712 pixels<br>
+                Image format: JPEG<br>
+                Color space: Display P3
+            </p>
+
+            <h3>Camera Positions</h3>
+
+            <p>
+                View 1: approximately overhead reference view.<br>
+                View 2: close oblique view.<br>
+                View 3: low side-angle view.<br>
+                View 4: opposite oblique view.
+            </p>
+
+        </section>
+
+        <p>
+            <a href="/">← Back to Home</a>
+        </p>
+
+    </div>
+
+</body>
+</html>

@@ -682,3 +682,11 @@ input[type="file"] {
     }
 
 }
+.module6-image {
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 20px auto;
+}
